@@ -9,11 +9,9 @@ import ec.edu.ups.dto.LibroDTO;
 import ec.edu.ups.dto.AutorDTO;
 import ec.edu.ups.Igestor.ILibreriaONR;
 import ec.edu.ups.common.GeneralExeption;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -26,7 +24,7 @@ public class Libreria extends javax.swing.JFrame {
     private LibroDTO libro;
     private ILibreriaONR logicaNegocioLibro;
     
-    private final DefaultComboBoxModel modeloListaAutores;
+    private final DefaultComboBoxModel<AutorDTO> modeloListaAutores;
     /**
      * Creates new form Agenda
      */
@@ -36,6 +34,7 @@ public class Libreria extends javax.swing.JFrame {
         modeloListaAutores = new DefaultComboBoxModel();
         cbxAutores.setModel(modeloListaAutores);
         
+        intanciarJBLogicaNegocio();
         // Listar los constactos
         ListarAutores();
     }
@@ -54,7 +53,7 @@ public class Libreria extends javax.swing.JFrame {
 
             // Obtiene el objeto JBean
             logicaNegocioLibro = (ILibreriaONR) new InitialContext(jndiProperties)
-                            .lookup("ejb:/AgendaWEB/ContactoON!ec.edu.ups.Igestor.IContactoONR");
+                            .lookup("ejb:/Eva56MorochoCarlosServer/LibreriaON!ec.edu.ups.Igestor.ILibreriaONR");
 
     }catch(Exception ex) {
             ex.printStackTrace();
@@ -80,9 +79,9 @@ public class Libreria extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
         btnGuardar = new javax.swing.JButton();
+        txtCodigo = new javax.swing.JTextField();
         txtNombre = new javax.swing.JTextField();
-        txtNombre1 = new javax.swing.JTextField();
-        cbxAutores = new javax.swing.JComboBox<>();
+        cbxAutores = new javax.swing.JComboBox();
         jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -126,9 +125,9 @@ public class Libreria extends javax.swing.JFrame {
             }
         });
 
-        txtNombre.setToolTipText("");
+        txtCodigo.setToolTipText("");
 
-        txtNombre1.setToolTipText("");
+        txtNombre.setToolTipText("");
 
         jLabel5.setFont(new java.awt.Font("Tw Cen MT Condensed", 0, 15)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 102, 204));
@@ -153,9 +152,9 @@ public class Libreria extends javax.swing.JFrame {
                             .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(crearContactoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtNombre1)
+                            .addComponent(txtNombre)
                             .addGroup(crearContactoLayout.createSequentialGroup()
-                                .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 82, Short.MAX_VALUE))
                             .addComponent(cbxAutores, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(btnGuardar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -174,14 +173,14 @@ public class Libreria extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(crearContactoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
-                            .addComponent(txtNombre1))
+                            .addComponent(txtNombre))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(crearContactoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel5)
                             .addComponent(cbxAutores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(crearContactoLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(txtNombre)
+                        .addComponent(txtCodigo)
                         .addGap(51, 51, 51)))
                 .addGap(32, 32, 32)
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -217,21 +216,19 @@ public class Libreria extends javax.swing.JFrame {
         }
     }
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        txtCedula.setText(txtCedula.getText().trim());
+
+        txtCodigo.setText(txtCodigo.getText().trim());
         txtNombre.setText(txtNombre.getText().trim());
-        txtDireccion.setText(txtDireccion.getText().trim());
-        if (txtNombre.getText().isEmpty() || txtCedula.getText().isEmpty() 
-            || txtDireccion.getText().isEmpty()) {
+        if (txtCodigo.getText().isEmpty() || txtNombre.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Llene todos los campos", "AVISO", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            personaSelect.setCedula(txtCedula.getText());
-            personaSelect.setNombre(txtNombre.getText());
-            personaSelect.setDireccion(txtDireccion.getText());
+            libro = new LibroDTO();
+            libro.setCodigo(txtCodigo.getText());
+            libro.setNombre(txtNombre.getText());
+            libro.setAutor((AutorDTO)modeloListaAutores.getSelectedItem());
             try {
-                logicaNegocioContacto.guardarContacto(personaSelect, personaSelect.getId() != null); 
-                JOptionPane.showMessageDialog(null, "Contacto guardado", "AVISO", JOptionPane.INFORMATION_MESSAGE);
-                mostrarVentanaContacto(false);
-                buscarConstactos();
+                logicaNegocioLibro.guardarLibro(libro); 
+                JOptionPane.showMessageDialog(null, "Libro guardado", "AVISO", JOptionPane.INFORMATION_MESSAGE);
             }catch(GeneralExeption e){
                 JOptionPane.showMessageDialog(null, e.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
             }
@@ -239,7 +236,7 @@ public class Libreria extends javax.swing.JFrame {
     }//GEN-LAST:event_btnGuardarActionPerformed
     
          
-    private void listarAutores(List autores){
+    private void listarAutores(List<AutorDTO> autores){
         modeloListaAutores.removeAllElements();
         autores.forEach(modeloListaAutores::addElement);
     }
@@ -270,11 +267,9 @@ public class Libreria extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(Libreria.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
             public void run() {
                 new Libreria().setVisible(true);
             }
@@ -283,7 +278,6 @@ public class Libreria extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGuardar;
-    private javax.swing.JComboBox<String> cbxAutores;
     private javax.swing.JPanel crearContacto;
     private javax.swing.ButtonGroup grupTipoTelefono;
     private javax.swing.JLabel jLabel2;
@@ -293,7 +287,8 @@ public class Libreria extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JLayeredPane panelPrincipal;
+    private javax.swing.JTextField txtCodigo;
     private javax.swing.JTextField txtNombre;
-    private javax.swing.JTextField txtNombre1;
+    private javax.swing.JComboBox cbxAutores;
     // End of variables declaration//GEN-END:variables
 }
