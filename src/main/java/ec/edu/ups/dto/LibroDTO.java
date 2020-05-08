@@ -1,0 +1,47 @@
+package ec.edu.ups.dto;
+
+import java.io.Serializable;
+
+import ec.edu.ups.common.GeneralDTO;
+
+
+public class LibroDTO extends GeneralDTO implements Serializable {
+
+	private static final long serialVersionUID = -21976438339776878L;
+    
+	private String codigo;
+    
+	private String nombre;
+    
+    private AutorDTO autor;
+
+	public String getCodigo() {
+		return codigo;
+	}
+
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public AutorDTO getAutor() {
+		return autor;
+	}
+
+	public void setAutor(AutorDTO autor) {
+		this.autor = autor;
+	}
+    
+	@Override
+	public String toString() {
+		return "[ " + codigo + " ] - " + nombre + " AUTOR: " + autor;
+	}
+
+}
